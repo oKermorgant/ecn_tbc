@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from nav2_msgs.action import ComputePathToPose
+from action_msgs.msg import GoalStatus
+from rclpy.action import ActionClient
+from nav_msgs.msg import Path
+from map_simulator.srv import Spawn
+from ackermann_msgs.msg import AckermannDrive
+import rclpy
+from rclpy.node import Node
+from rclpy.executors import SingleThreadedExecutor
+from math import atan2
+from rcl_interfaces.msg import SetParametersResult
+
+
+class Planner(Node):
+
+    def __init__(self):
+        super().__init__('navigator', namespace='/zoe')
+
+        self.goal = None
+        self.goal_sub = self.create_subscription(PoseStamped, '/goal_pose', self.goal_cb, 10)
+        self.planner_client = Node('planner_client', namespace='/zoe')
+        self.planner_client.compute_path_to_pose_client = ActionClient(
+             self.planner_client, ComputePathToPose, 'compute_path_to_pose')
+        self.planner_client.compute_path_to_pose_client.wait_for_server()
+
+        from rcl_interfaces.msg import ParameterDescriptor
+
+        algo_description = ParameterDescriptor(description = 'Use A* (otherwise  Hybrid)')
+        use_astar = self.declare_parameter('use_astar', True, descriptor = algo_description).value
+
+        self.goal_msg = ComputePathToPose.Goal()
+        # self.goal_msg.start = PoseStamped()
+        self.goal_msg.planner_id = 'GridBased' if use_astar else 'Hybrid'
+        self.goal_msg.use_start = False
+
+        replan_per = self.declare_parameter('replan_period', -1.).value
+
+        if replan_per > 0:
+            self.replanner = self.create_timer(replan_per, self.replan)
+
+        self.reset_sub = self.create_subscription(PoseWithCovarianceStamped, '/initialpose', self.reset_cb, 10)
+        self.spawner = self.create_client(Spawn, '/simulator/spawn')
+        self.cmd_max = 0
+        self.cmd_sub = self.create_subscription(AckermannDrive, 'cmd', lambda msg: None, 1)
+
+        self.watchdog_timer = self.create_timer(1., self.watchdog)
+
+        # to erase all messages at reset
+        self.cmd_pub = self.create_publisher(AckermannDrive, 'cmd', 1)
+        self.plan_pub = []
+        for topic in ('plan', 'local_plan', 'predicted_plan'):
+            self.plan_pub.append(self.create_publisher(Path, topic, 1))
+
+        self.spawner.wait_for_service()
+
+        # monitor changes on params
+        self.add_on_set_parameters_callback(self.cb_params)
+
+    def cb_params(self, params):
+
+        accept = False
+        for param in params:
+            if param.name == 'use_astar':
+                self.goal_msg.planner_id = 'GridBased' if param.value else 'Hybrid'
+                self.get_logger().info(f'Switching planner to {self.goal_msg.planner_id}')
+                accept = True
+        return SetParametersResult(successful=accept)
+
+    def watchdog(self):
+
+        cur_pub = self.cmd_sub.get_publisher_count()
+        self.cmd_max = max(self.cmd_max, cur_pub)
+
+        if self.cmd_max == 2 and cur_pub == 1:
+            self.reset_cb()
+
+    def goal_cb(self, goal):
+        self.goal = goal
+        self.replan()
+
+    def replan(self):
+        if self.goal is None:
+            return
+        self.goal_msg.goal = self.goal
+
+        send_goal_future = self.planner_client.compute_path_to_pose_client.send_goal_async(self.goal_msg)
+        rclpy.spin_until_future_complete(self.planner_client, send_goal_future)
+        goal_handle = send_goal_future.result()
+
+        if not goal_handle.accepted:
+            self.get_logger().error('Get path was rejected!')
+            return
+
+    def reset_cb(self, pose = None):
+
+        # stop moving
+        self.goal = None
+        self.cmd_pub.publish(AckermannDrive())
+
+        if pose is not None:
+            req = Spawn.Request()
+            req.robot_namespace = '/zoe'
+            req.x = pose.pose.pose.position.x
+            req.y = pose.pose.pose.position.y
+            req.theta = 2*atan2(pose.pose.pose.orientation.z, pose.pose.pose.orientation.w)
+            self.spawner.call_async(req)
+
+        # also reset plans
+        path = Path()
+        path.header.stamp = self.get_clock().now().to_msg()
+        path.header.frame_id = 'map'
+        for pub in self.plan_pub:
+            pub.publish(path)
+
+
+rclpy.init(args=None)
+node = Planner()
+
+executor = SingleThreadedExecutor()
+executor.add_node(node)
+executor.spin()
+node.planner_client.destroy_node()
+node.destroy_node()
+rclpy.shutdown()

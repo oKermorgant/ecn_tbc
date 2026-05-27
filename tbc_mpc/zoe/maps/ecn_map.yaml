@@ -1,0 +1,6 @@
+free_thresh: 0.05
+image: ecn_map.png
+negate: 0
+occupied_thresh: 0.1
+origin: [0.000000,0.000000,0.000000]
+resolution: 0.65 # 0.552

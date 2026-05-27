@@ -1,0 +1,637 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="pioneer_world">
+
+  <scene><grid>false</grid></scene>
+
+    <physics name="50ms" type="dart">
+      <max_step_size>0.05</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin
+      filename="ignition-gazebo-physics-system"
+      name="ignition::gazebo::systems::Physics">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-user-commands-system"
+      name="ignition::gazebo::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="ignition-gazebo-scene-broadcaster-system"
+      name="ignition::gazebo::systems::SceneBroadcaster">
+    </plugin>    
+    <plugin
+      filename="ignition-gazebo-sensors-system"
+      name="ignition::gazebo::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <visual name="plane">
+          <geometry>
+            <plane>
+              <size>100 100</size>
+              <normal>0 0 1</normal>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 0.9</ambient>
+            <diffuse>0.3 0.3 0.3 0.9</diffuse>
+            <specular>0.3 0.3 0.3 0.9</specular>
+          </material>
+        </visual>
+        <collision name="plane">
+          <geometry>
+            <plane>
+              <size>100 100</size>
+              <normal>0 0 1</normal>
+            </plane>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name="target">
+    <pose>5. 5. 0 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <visual name="disk">
+          <geometry>
+            <cylinder>
+              <radius>1</radius>
+              <length>0.01</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 0.5 0.5 1</ambient>
+            <diffuse>1 0.5 0.5 1</diffuse>
+            <specular>1 0.5 0.5 1</specular>
+          </material>
+        </visual>
+        <visual name="bar1">
+          <pose>0 0 0 0 0 0.79</pose>
+          <geometry>
+            <box>
+              <size>1.6 0.15 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.05 0.05 1</ambient>
+            <diffuse>0.1 0.05 0.05 1</diffuse>
+            <specular>0.1 0.05 0.05 1</specular>
+          </material>
+        </visual>
+        <visual name="bar2">
+          <pose>0 0 0 0 0 0.79</pose>
+          <geometry>
+            <box>
+              <size>0.15 1.6 0.02</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.05 0.05 1</ambient>
+            <diffuse>0.1 0.05 0.05 1</diffuse>
+            <specular>0.1 0.05 0.05 1</specular>
+          </material>
+        </visual>
+      </link>
+    <plugin
+        filename="libignition-gazebo-pose-publisher-system.so"
+        name="ignition::gazebo::systems::PosePublisher">
+        <publish_link_pose>false</publish_link_pose>
+        <publish_collision_pose>false</publish_collision_pose>
+        <publish_visual_pose>false</publish_visual_pose>
+        <publish_nested_model_pose>true</publish_nested_model_pose>
+    </plugin>      
+    </model>
+    
+    <model name="ball">
+      <static>true</static>
+    <pose>5. -5. 3 0 0 0</pose>
+      <link name="link">
+        <visual name="ball">
+          <geometry>
+            <sphere>
+              <radius>0.3</radius>
+            </sphere>
+          </geometry>
+          <material>
+          <ambient>0 1 0.1 1</ambient>
+            <diffuse>0 1 0.1 1</diffuse>
+            <specular>0 1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    <plugin
+        filename="libignition-gazebo-pose-publisher-system.so"
+        name="ignition::gazebo::systems::PosePublisher">
+        <publish_link_pose>false</publish_link_pose>
+        <publish_collision_pose>false</publish_collision_pose>
+        <publish_visual_pose>false</publish_visual_pose>
+        <publish_nested_model_pose>true</publish_nested_model_pose>
+    </plugin>
+    </model>
+
+      <model name='pioneer'>
+    <link name='base_link'>
+      <inertial>
+        <pose>-3.477398390833525e-05 0 0.0001747433401677264 0 0 0</pose>
+        <mass>13.5101</mass>
+        <inertia>
+          <ixx>4.0005514738659231</ixx>
+          <ixy>0</ixy>
+          <ixz>0.0001093363055787892</ixz>
+          <iyy>4.0005756279291047</iyy>
+          <iyz>0</iyz>
+          <izz>4.0000241540631816</izz>
+        </inertia>
+      </inertial>
+      <visual name='base_link_visual'>
+        <pose>-0.045 0 0.148 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/chassis.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 0 0 1</diffuse>
+          <ambient>1 0 0 1</ambient>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__back_sonar_visual_1'>
+        <pose>0.109 0 0.209 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/back_sonar.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.89375 0.72875 0.2625 1</diffuse>
+          <ambient>0.89375 0.72875 0.2625 1</ambient>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__front_sonar_visual_2'>
+        <pose>-0.198 0 0.208 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/front_sonar.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Yellow</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.89375 0.72875 0.2625 1</diffuse>
+          <ambient>0.89375 0.72875 0.2625 1</ambient>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__top_plate_visual_3'>
+        <pose>-0.045 0 0.234 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/top.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.0475 0.0475 0.0475 1</diffuse>
+          <ambient>0.0475 0.0475 0.0475 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='base_caster_swivel_joint' type='revolute'>
+      <pose relative_to='base_link'>-0.185 0 0.055 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>caster_swivel</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <effort>100</effort>
+          <velocity>100</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='caster_swivel'>
+      <pose relative_to='base_caster_swivel_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <visual name='caster_swivel_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/caster_swivel.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.625 0.625 0.625 1</diffuse>
+          <ambient>0.625 0.625 0.625 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='caster_swivel_hubcap_joint' type='revolute'>
+      <pose relative_to='caster_swivel'>-0.026 0 -0.016 0 0 0</pose>
+      <parent>caster_swivel</parent>
+      <child>caster_wheel</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>100</effort>
+          <velocity>100</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='caster_wheel'>
+      <pose relative_to='caster_swivel_hubcap_joint'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.0003181818181818183 0 -9.090909090909093e-05 0 0 0</pose>
+        <mass>0.11</mass>
+        <inertia>
+          <ixx>0.024823540284909091</ixx>
+          <ixy>-0.001423467356</ixy>
+          <ixz>0.0010054278418181819</ixz>
+          <iyy>0.030436441310545449</iyy>
+          <iyz>-8.5469340000000008e-06</iyz>
+          <izz>0.02352806724963636</izz>
+        </inertia>
+      </inertial>
+      <collision name='caster_wheel_collision'>
+        <pose>0 0 0 -1.57079635 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.037499999999999999</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <visual name='caster_wheel_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/caster_wheel.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.14625 0.14625 0.14625 1</diffuse>
+          <ambient>0.14625 0.14625 0.14625 1</ambient>
+        </material>
+      </visual>
+      <visual name='caster_wheel_fixed_joint_lump__caster_hubcap_visual_1'>
+        <pose>-0.0035 0 -0.001 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/caster_hubcap.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.625 0.625 0.625 1</diffuse>
+          <ambient>0.625 0.625 0.625 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='left_wheel' type='revolute'>
+      <pose relative_to='base_link'>0 0.15 0.1 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>left_hub</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>100</effort>
+          <velocity>100</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_hub'>
+      <pose relative_to='left_wheel'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.20000000000000001</mass>
+        <inertia>
+          <ixx>0.012411765597</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.015218160428</iyy>
+          <iyz>0</iyz>
+          <izz>0.011763977942999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_hub_fixed_joint_lump__left_tire_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.095000000000000001</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='left_hub_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/left_hubcap.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Yellow</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>1 1 0.18875 1</diffuse>
+          <ambient>1 1 0.18875 1</ambient>
+        </material>
+      </visual>
+      <visual name='left_hub_fixed_joint_lump__left_tire_visual_1'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/left_wheel.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.14625 0.14625 0.14625 1</diffuse>
+          <ambient>0.14625 0.14625 0.14625 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='pan' type='revolute'>
+      <pose relative_to='base_link'>0.1 0 0.3 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>cam_pan</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='cam_pan'>
+      <pose relative_to='pan'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.001</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name='cam_pan_visual'>
+        <pose>0 0 -0.02 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.10000000000000001</length>
+            <radius>0.02</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>1 0 0 1</diffuse>
+          <ambient>1 0 0 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='tilt' type='revolute'>
+      <pose relative_to='cam_pan'>0 0 0 0 0 0</pose>
+      <parent>cam_pan</parent>
+      <child>camera</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='camera'>
+      <pose relative_to='tilt'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.0001</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+      <visual name='camera_visual'>
+        <pose>0.02 0 0 0 1.570796326794897 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.050000000000000003</length>
+            <radius>0.01</radius>
+          </cylinder>
+        </geometry>
+      </visual>
+        <sensor name="camera" type="camera">
+          <camera>
+            <horizontal_fov>1.5</horizontal_fov>
+            <image>
+              <width>800</width>
+              <height>600</height>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>100</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <visualize>true</visualize>
+          <topic>pioneer/camera</topic>
+        </sensor>
+    </link>
+    <joint name='right_wheel' type='revolute'>
+      <pose relative_to='base_link'>0 -0.15 0.1 0 0 0</pose>
+      <parent>base_link</parent>
+      <child>right_hub</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <effort>100</effort>
+          <velocity>100</velocity>
+          <lower>-10000000000000000</lower>
+          <upper>10000000000000000</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_hub'>
+      <pose relative_to='right_wheel'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.20000000000000001</mass>
+        <inertia>
+          <ixx>0.012411765597</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.015218160428</iyy>
+          <iyz>0</iyz>
+          <izz>0.011763977942999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_hub_fixed_joint_lump__right_tire_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.095000000000000001</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='right_hub_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/right_hubcap.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>1 1 0.18875 1</diffuse>
+          <ambient>1 1 0.18875 1</ambient>
+        </material>
+      </visual>
+      <visual name='right_hub_fixed_joint_lump__right_tire_visual_1'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>p3dx_meshes/right_wheel.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.14625 0.14625 0.14625 1</diffuse>
+          <ambient>0.14625 0.14625 0.14625 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <static>false</static>
+    <plugin name='ignition::gazebo::systems::JointStatePublisher' filename='libignition-gazebo-joint-state-publisher-system.so'/>
+    <plugin name='ignition::gazebo::systems::PosePublisher' filename='libignition-gazebo-pose-publisher-system.so'>
+      <publish_link_pose>true</publish_link_pose>
+      <publish_collision_pose>false</publish_collision_pose>
+      <publish_visual_pose>false</publish_visual_pose>
+      <publish_nested_model_pose>true</publish_nested_model_pose>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::JointController' filename='libignition-gazebo-joint-controller-system.so'>
+      <joint_name>right_wheel</joint_name>
+      <topic>/pioneer/right_wheel_cmd</topic>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::JointController' filename='libignition-gazebo-joint-controller-system.so'>
+      <joint_name>left_wheel</joint_name>
+      <topic>/pioneer/left_wheel_cmd</topic>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::JointController' filename='libignition-gazebo-joint-controller-system.so'>
+      <joint_name>tilt</joint_name>
+      <topic>/pioneer/tilt_cmd</topic>
+    </plugin>
+    <plugin name='ignition::gazebo::systems::JointController' filename='libignition-gazebo-joint-controller-system.so'>
+      <joint_name>pan</joint_name>
+      <topic>/pioneer/pan_cmd</topic>
+    </plugin>
+  </model>
+
+  </world>
+</sdf>

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot name="zoe" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:arg name="ns" default="zoe"/>
+
+     <link name="$(arg ns)/base_link">
+       <visual>
+          <origin xyz="0 0 0." rpy="0 0 ${-pi/2}" />
+          <geometry>
+            <mesh filename="file://$(find tbc_mpc)/zoe/meshes/body.dae"/>
+          </geometry>
+        </visual>
+     </link>
+
+      <link name="$(arg ns)/os_sensor">
+        <visual>
+          <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+          <geometry>
+            <mesh filename="file://$(find tbc_mpc)/zoe/meshes/velodyne/velodyne.dae"/>
+          </geometry>
+        </visual>
+      </link>
+
+      <joint name="os_sensor" type="fixed">
+        <parent link="$(arg ns)/base_link"/>
+        <child link="$(arg ns)/os_sensor"/>
+        <origin xyz="0.8 0.0 1.6"/>
+      </joint>
+
+
+
+     <xacro:macro name="wheel" params="name parent x y">
+      <link name="$(arg ns)/${name}">
+        <visual>
+          <origin rpy="0 0 ${pi/2}" />
+          <geometry>
+            <mesh filename="file://$(find tbc_mpc)/zoe/meshes/wheel.stl"/>
+          </geometry>
+          <material name="wheel_texture">
+            <color rgba="0 0 0 1"/>
+          </material>
+        </visual>
+      </link>
+
+      <joint name="${name}" type="continuous">
+        <origin xyz="${x} ${y} 0.3"/>
+        <parent link="$(arg ns)/${parent}"/>
+        <child link="$(arg ns)/${name}"/>
+        <axis xyz="0 1 0"/>
+      </joint>
+     </xacro:macro>
+
+    <xacro:macro name="steering" params="name x y">
+
+      <link name="$(arg ns)/${name}_steering"/>
+
+      <joint name="${name}_steering" type="revolute">
+        <origin xyz="${x} ${y} 0"/>
+        <parent link="$(arg ns)/base_link"/>
+        <child link="$(arg ns)/${name}_steering"/>
+        <axis xyz="0 0 1"/>
+        <limit upper="0.7" lower="-0.7" effort="0" velocity="0"/>
+      </joint>
+
+      <xacro:wheel name="${name}" parent="${name}_steering" x="0" y="0"/>
+
+   </xacro:macro>
+
+   <xacro:arg name="B" default="0.25"/>
+
+   <xacro:property name="L" value="2.588"/>
+   <xacro:property name="B" value="1.506"/>
+
+   <xacro:wheel name="rl" parent="base_link" x="0" y="${B/2}"/>
+   <xacro:wheel name="rr" parent="base_link" x="0" y="${-B/2}"/>
+   <xacro:steering name="fl" x="${L}" y="${B/2}"/>
+   <xacro:steering name="fr" x="${L}" y="${-B/2}"/>
+
+
+</robot>

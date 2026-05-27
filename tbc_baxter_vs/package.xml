@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>tbc_baxter_vs</name>
+  <version>2.0.0</version>
+  <description>Baxter visual servoing</description>
+
+  <maintainer email="olivier.kermorgant@ec-nantes.fr">Olivier Kermorgant</maintainer>
+
+  <license>MIT</license>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>baxter_core_msgs</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>urdf</depend>
+  <depend>image_transport</depend>
+  <depend>ecn_common</depend>
+
+  <export>
+       <build_type>ament_cmake</build_type>
+  </export>
+</package>

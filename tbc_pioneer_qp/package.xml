@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tbc_pioneer_qp</name>
+  <version>0.0.1</version>
+  <description>
+    Task-based control lab of a Pioneer robot with a pan-tilt camera
+  </description>
+  <maintainer email="olivier.kermorgant@ec-nantes.fr">Olivier Kermorgant</maintainer>
+  <license>GPL</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>simple_launch</exec_depend>
+  <exec_depend>slider_publisher</exec_depend>
+  <depend>ecn_common</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
