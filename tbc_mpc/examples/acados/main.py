@@ -118,7 +118,7 @@ def create_ocp_solver_description() -> AcadosOcp:
     ocp.constraints.x0 = X0
 
     # set options
-    ocp.solver_options.qp_solver = "FULL_CONDENSING_QPOASES"  # FULL_CONDENSING_QPOASES
+    ocp.solver_options.qp_solver = "FULL_CONDENSING_DAQP"  # FULL_CONDENSING_QPOASES
     ocp.solver_options.hessian_approx = "GAUSS_NEWTON"  # 'GAUSS_NEWTON', 'EXACT'
     ocp.solver_options.integrator_type = "IRK"
     ocp.solver_options.nlp_solver_type = "SQP_RTI"  # SQP_RTI, SQP (does not work)
@@ -186,7 +186,8 @@ for i in range(Nsim):
 
 
     simU[i, :] = mpc_solver.solve_for_x0(xcurrent)
-    status = mpc_solver.get_status()
+    status = 2 #mpc_solver.get_status()
+
     print(f'{i} / {Nsim} : {deltatime(t0)}')
 
     if status not in [0, 2]:

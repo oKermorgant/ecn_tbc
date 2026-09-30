@@ -13,6 +13,9 @@
 #include <ecn_common/color_detector.h>
 #include <ctime>
 
+namespace visp{}
+using namespace visp;
+
 
 inline double h_weight(double s, double s_act, double s_max)
 {
