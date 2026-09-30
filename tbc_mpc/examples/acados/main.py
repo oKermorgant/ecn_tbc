@@ -6,11 +6,16 @@ from time import time
 import sys
 from casadi import SX, vertcat, sin, cos
 import matplotlib.pyplot as plt
-
+from tbc_mpc.acados import get_solvers
 
 generate = '-g' in sys.argv
 build = '-b' in sys.argv or generate
 varying = '-v' in sys.argv
+
+# returns the first available solver, or 'FULL_CONDENSING_DAQP' if available
+solver = get_solvers('FULL_CONDENSING_DAQP')[0]
+
+print('Using', solver)
 
 
 def phi_ref(t, include_u = True):
@@ -118,7 +123,7 @@ def create_ocp_solver_description() -> AcadosOcp:
     ocp.constraints.x0 = X0
 
     # set options
-    ocp.solver_options.qp_solver = "FULL_CONDENSING_DAQP"  # FULL_CONDENSING_QPOASES
+    ocp.solver_options.qp_solver = solver  # an available solver
     ocp.solver_options.hessian_approx = "GAUSS_NEWTON"  # 'GAUSS_NEWTON', 'EXACT'
     ocp.solver_options.integrator_type = "IRK"
     ocp.solver_options.nlp_solver_type = "SQP_RTI"  # SQP_RTI, SQP (does not work)
